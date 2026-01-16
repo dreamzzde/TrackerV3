@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>74kg Smart Tracker</title>
+    <title>MISSION 74 - Smart Tracker</title>
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1614/1614392.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -24,15 +24,18 @@
         </div>
         <div class="text-right">
             <div id="score" class="text-3xl font-black text-green-600 leading-none">0%</div>
-            <p id="ampelStatus" class="text-[10px] uppercase font-bold tracking-widest mt-1">Check...</p>
+            <p id="ampelStatus" class="text-[10px] uppercase font-bold tracking-widest mt-1 italic">Check...</p>
         </div>
     </header>
 
     <div id="warningArea"></div>
 
-    <div class="card p-4 mb-4 flex items-center justify-between">
-        <label class="font-bold text-gray-600 text-sm italic">📅 Tag:</label>
-        <input type="date" id="dateInput" onchange="render()" class="rounded-xl p-2 text-sm bg-gray-50 border-none font-bold text-gray-700">
+    <div class="card p-4 mb-4">
+        <div class="flex items-center justify-between mb-1">
+            <label id="dayNameLabel" class="font-black text-gray-800 text-sm uppercase italic">Wird geladen...</label>
+            <input type="date" id="dateInput" onchange="updateDayDisplay(); render();" class="rounded-xl p-1 text-xs bg-gray-50 border-none font-bold text-gray-500">
+        </div>
+        <p id="fullDateLabel" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest"></p>
     </div>
 
     <div class="grid grid-cols-2 gap-3 mb-6">
@@ -73,49 +76,28 @@
                 <h2 class="text-xl font-black uppercase italic text-blue-600">💡 Mahlzeiten Guide</h2>
                 <button onclick="toggleOverlay('mealOverlay')" class="text-3xl text-gray-300">&times;</button>
             </div>
-            
             <div class="space-y-4">
                 <div class="p-3 bg-blue-50 rounded-2xl border border-blue-100">
-                    <p class="text-[10px] font-black text-blue-600 uppercase mb-1">Frühstück (Protein & Fokus)</p>
+                    <p class="text-[10px] font-black text-blue-600 uppercase mb-1">Frühstück</p>
                     <button onclick="logSpecial('Magerquark, Beeren & Nüsse', 'Frühstück')" class="text-left w-full text-sm font-bold text-gray-800 py-1 border-b border-blue-100">Quark & Beeren (+)</button>
                     <button onclick="logSpecial('Rührei mit viel Gemüse', 'Frühstück')" class="text-left w-full text-sm font-bold text-gray-800 py-1 mt-1">Rührei & Gemüse (+)</button>
                 </div>
-
                 <div class="p-4 bg-green-50 rounded-2xl border border-green-100">
                     <p class="text-[10px] font-black text-green-600 uppercase mb-1">Mittagessen (Volumen)</p>
-                    <div class="mb-3">
-                        <button onclick="logSpecial('Großer Salat mit Protein', 'Mittag')" class="text-left w-full text-sm font-bold text-gray-800">🥗 Großer Salat (+)</button>
-                        <p class="text-[9px] text-green-700 leading-tight">Basis: Blattgrün, Gurke, Tomate + Hähnchen/Thunfisch. Dressing: Essig/Öl.</p>
-                    </div>
-                    <div>
-                        <button onclick="logSpecial('Veggie-Bowl mit wenig Reis', 'Mittag')" class="text-left w-full text-sm font-bold text-gray-800 border-t border-green-200 pt-1">🥣 Veggie-Bowl (+)</button>
-                        <p class="text-[9px] text-green-700 leading-tight italic">3 Teile Gemüse zu 1 Teil Reis/Linsen. Hält extrem lange satt.</p>
-                    </div>
+                    <button onclick="logSpecial('Großer Salat mit Protein', 'Mittag')" class="text-left w-full text-sm font-bold text-gray-800">🥗 Großer Salat (+)</button>
+                    <button onclick="logSpecial('Veggie-Bowl mit wenig Reis', 'Mittag')" class="text-left w-full text-sm font-bold text-gray-800 border-t border-green-200 mt-1 pt-1">🥣 Veggie-Bowl (+)</button>
                 </div>
-
                 <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                    <p class="text-[10px] font-black text-orange-600 uppercase mb-1">Abendessen (Fettverbrennung)</p>
-                    <div class="mb-3">
-                        <button onclick="logSpecial('Gemüse & Lachs/Tofu', 'Abend')" class="text-left w-full text-sm font-bold text-gray-800">🔥 Gemüse & Protein (+)</button>
-                        <p class="text-[9px] text-orange-700 leading-tight">Gebratenes Gemüse mit Lachs oder Tofu. Wenig Insulin-Ausstoß.</p>
-                    </div>
-                    <div>
-                        <button onclick="logSpecial('Gemüsepfanne pur', 'Abend')" class="text-left w-full text-sm font-bold text-gray-800 border-t border-orange-200 pt-1">🍳 Gemüsepfanne pur (+)</button>
-                        <p class="text-[9px] text-orange-700 leading-tight italic">Maximales Volumen, minimale Kalorien. Ideal für die Nacht.</p>
-                    </div>
-                </div>
-
-                <div class="p-3 bg-gray-50 rounded-2xl border border-gray-100">
-                    <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Snack (Notfall)</p>
-                    <button onclick="logSpecial('Ein Apfel', 'Snack')" class="text-left w-full text-[11px] font-bold text-gray-600">Apfel (+)</button>
-                    <button onclick="logSpecial('Handvoll Mandeln', 'Snack')" class="text-left w-full text-[11px] font-bold text-gray-600 mt-1 border-t border-gray-200 pt-1">Handvoll Mandeln (+)</button>
+                    <p class="text-[10px] font-black text-orange-600 uppercase mb-1">Abendessen</p>
+                    <button onclick="logSpecial('Gemüse & Lachs/Tofu', 'Abend')" class="text-left w-full text-sm font-bold text-gray-800">🔥 Gemüse & Protein (+)</button>
+                    <button onclick="logSpecial('Gemüsepfanne pur', 'Abend')" class="text-left w-full text-sm font-bold text-gray-800 border-t border-orange-200 mt-1 pt-1">🍳 Gemüsepfanne pur (+)</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="card p-6 mb-6 border-t-8 border-black shadow-xl">
-        <input id="foodInput" type="text" oninput="autoCheck()" placeholder="Was isst du gerade?" class="w-full text-xl font-bold placeholder-gray-300 border-none focus:ring-0 p-0 mb-4 outline-none">
+        <input id="foodInput" type="text" oninput="autoCheck()" placeholder="Was isst du?" class="w-full text-xl font-bold placeholder-gray-300 border-none focus:ring-0 p-0 mb-4 outline-none">
         <div class="grid grid-cols-2 gap-3 mb-4">
             <select id="mealInput" class="bg-gray-50 p-3 rounded-xl font-bold text-gray-600 text-sm">
                 <option>Frühstück</option><option>Mittag</option><option>Abend</option><option>Snack</option>
@@ -129,31 +111,50 @@
 
     <div id="foodList" class="space-y-3 mb-8"></div>
 
-    <div class="card p-6 mb-8 bg-green-50 border border-green-100">
-        <h3 class="font-black uppercase text-xs mb-3 text-green-800 italic">Gewichtstracker</h3>
-        <div class="flex gap-2">
-            <input id="weightInput" type="number" step="0.1" placeholder="z.B. 85.2" class="flex-grow p-3 rounded-xl font-bold border-none">
-            <button onclick="saveWeight()" class="bg-green-600 text-white px-6 rounded-xl font-bold">OK</button>
-        </div>
-        <p id="lastWeightDisplay" class="text-[10px] text-green-700 mt-2 font-bold uppercase"></p>
-    </div>
-
     <script>
         const qs = (id) => document.getElementById(id);
-        
-        // MASSIV ERWEITERTE LISTE FÜR AUTO-CHECK
-        const goodWords = [
-            'salat', 'gemüse', 'hähnchen', 'quark', 'ei', 'fisch', 'brokkoli', 'wasser', 'apfel', 'beeren', 
-            'steak', 'pute', 'reis', 'kartoffel', 'lachs', 'tofu', 'mandeln', 'spinat', 'gurke', 'tomate', 
-            'paprika', 'pilze', 'zucchini', 'aubergine', 'linsen', 'bohnen', 'kichererbsen', 'hüttenkäse', 
-            'skyr', 'nüsse', 'avocado', 'bowl', 'pfanne', 'rührei', 'omelett'
-        ];
-        const badWords = [
-            'pizza', 'burger', 'bier', 'cola', 'schokolade', 'chips', 'kuchen', 'pommes', 'döner', 
-            'nudeln', 'zucker', 'alkohol', 'eis', 'toast', 'croissant', 'limo', 'energy'
-        ];
+        const goodWords = ['salat', 'gemüse', 'hähnchen', 'quark', 'ei', 'fisch', 'brokkoli', 'apfel', 'beeren', 'lachs', 'tofu', 'reis', 'pfanne', 'bowl', 'mandeln', 'steak', 'pute'];
+        const badWords = ['pizza', 'burger', 'bier', 'cola', 'chips', 'schokolade', 'nudeln', 'zucker', 'eis', 'döner'];
 
-        qs('dateInput').value = new Date().toISOString().split('T')[0];
+        // LOKALE DATUMSERKENNUNG (yyyy-mm-dd)
+        function getLocalDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Beim Start
+        window.onload = function() {
+            qs('dateInput').value = getLocalDate();
+            updateDayDisplay();
+            render();
+        };
+
+        function updateDayDisplay() {
+            const inputVal = qs('dateInput').value;
+            if (!inputVal) return;
+
+            const parts = inputVal.split('-');
+            const selectedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            selectedDate.setHours(0,0,0,0);
+
+            const dayName = selectedDate.toLocaleDateString('de-DE', { weekday: 'long' });
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const fullDate = selectedDate.toLocaleDateString('de-DE', options);
+
+            if (selectedDate.getTime() === now.getTime()) {
+                qs('dayNameLabel').innerText = "Heute (" + dayName + ")";
+                qs('dayNameLabel').className = "font-black text-green-600 text-sm uppercase italic";
+            } else {
+                qs('dayNameLabel').innerText = dayName;
+                qs('dayNameLabel').className = "font-black text-gray-800 text-sm uppercase italic";
+            }
+            qs('fullDateLabel').innerText = fullDate;
+        }
 
         function toggleOverlay(id) { qs(id).classList.toggle('hidden'); }
 
@@ -161,11 +162,11 @@
             const input = qs('foodInput').value.toLowerCase();
             const tagInput = qs('tagInput');
             const feedback = qs('feedback');
-            if (!input) { feedback.innerText = "Warte auf Eingabe..."; return; }
+            if (!input) { feedback.innerText = "Ready to work?"; feedback.className = "text-[10px] font-bold text-blue-500 uppercase italic"; return; }
             let isGood = goodWords.some(word => input.includes(word));
             let isBad = badWords.some(word => input.includes(word));
-            if (isGood) { tagInput.value = "Normal"; feedback.innerText = "Top! Das passt."; feedback.className = "text-[10px] font-bold text-green-600 uppercase italic"; }
-            else if (isBad) { tagInput.value = "Cheat"; feedback.innerText = "Vorsicht! Cheat-Gefahr."; feedback.className = "text-[10px] font-bold text-red-600 uppercase italic"; }
+            if (isGood) { tagInput.value = "Normal"; feedback.className = "text-[10px] font-bold text-green-600 uppercase italic"; feedback.innerText = "Top Wahl!"; }
+            else if (isBad) { tagInput.value = "Cheat"; feedback.className = "text-[10px] font-bold text-red-600 uppercase italic"; feedback.innerText = "Vorsicht!"; }
         }
 
         function getData(date) { return JSON.parse(localStorage.getItem('f_' + date) || '[]'); }
@@ -173,13 +174,7 @@
         function logSpecial(name, category) {
             const date = qs('dateInput').value;
             const data = getData(date);
-            data.unshift({
-                food: name,
-                meal: category,
-                tag: "Normal",
-                time: new Date().toLocaleTimeString('de-DE').slice(0,5),
-                timestamp: Date.now()
-            });
+            data.unshift({ food: name, meal: category, tag: "Normal", time: new Date().toLocaleTimeString('de-DE').slice(0,5), timestamp: Date.now() });
             localStorage.setItem('f_' + date, JSON.stringify(data));
             qs('mealOverlay').classList.add('hidden');
             qs('workoutOverlay').classList.add('hidden');
@@ -210,37 +205,21 @@
                 const borderColor = isWorkout ? 'border-purple-500' : (item.tag === 'Normal' ? 'border-green-500' : 'border-red-500');
                 const bgColor = isWorkout ? 'bg-purple-50' : 'bg-white';
                 const div = document.createElement('div');
-                div.className = `card p-4 flex items-center justify-between border-l-8 ${borderColor} ${bgColor} mb-2`;
+                div.className = `card p-4 flex items-center justify-between border-l-8 ${borderColor} ${bgColor} mb-2 shadow-sm`;
                 div.innerHTML = `<div><p class="text-[10px] font-bold text-gray-400 uppercase">${item.time} • ${item.meal}</p><p class="font-bold text-gray-800 text-sm">${item.food}</p></div><button onclick="remove(${index})" class="text-gray-300 text-xl px-2">&times;</button>`;
                 list.appendChild(div);
             });
 
             const score = Math.max(0, 100 - (cheats * 25));
             qs('score').innerText = score + "%";
-            const ampel = qs('ampelStatus');
-            if (score >= 75) { ampel.innerText = "🟢 GUT"; ampel.className = "text-[10px] text-green-600 font-black"; }
-            else { ampel.innerText = "🔴 KRITISCH"; ampel.className = "text-[10px] text-red-600 font-black"; }
-
+            qs('ampelStatus').innerText = score >= 75 ? "🟢 Gut" : "🔴 Kritisch";
+            
             const hour = new Date().getHours();
             const warningArea = qs('warningArea');
             warningArea.innerHTML = '';
-            if (hour >= 20 && date === new Date().toISOString().split('T')[0]) {
-                warningArea.innerHTML = `<div class="bg-red-100 p-4 rounded-2xl mb-4 text-red-700 text-[11px] font-bold border border-red-200 animate-pulse text-center uppercase tracking-wider">⏰ Essensfenster geschlossen!</div>`;
+            if (hour >= 20 && date === getLocalDate()) {
+                warningArea.innerHTML = `<div class="bg-red-100 p-4 rounded-2xl mb-4 text-red-700 text-[11px] font-bold border border-red-200 animate-pulse text-center uppercase">⏰ Essensfenster geschlossen</div>`;
             }
-            updateWeightDisplay();
-        }
-
-        function saveWeight() {
-            const val = qs('weightInput').value;
-            if (!val) return;
-            localStorage.setItem('last_w', val);
-            qs('weightInput').value = '';
-            render();
-        }
-
-        function updateWeightDisplay() {
-            const w = localStorage.getItem('last_w');
-            qs('lastWeightDisplay').innerText = w ? `Aktuell: ${w} kg` : "Gewicht loggen!";
         }
 
         function remove(index) {
@@ -250,8 +229,6 @@
             localStorage.setItem('f_' + date, JSON.stringify(data));
             render();
         }
-
-        render();
     </script>
 </body>
 </html>
