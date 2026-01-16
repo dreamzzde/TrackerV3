@@ -12,7 +12,6 @@
         .btn-black { background-color: #000; color: white; transition: all 0.1s; }
         .btn-black:active { transform: scale(0.98); opacity: 0.8; }
         input, select { border: 1px solid #e2e8f0 !important; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-4 pb-24 max-w-md mx-auto">
@@ -30,6 +29,11 @@
 
     <div id="warningArea"></div>
 
+    <div class="card p-4 mb-4 flex items-center justify-between">
+        <label class="font-bold text-gray-600 text-sm italic">📅 Tag wählen:</label>
+        <input type="date" id="dateInput" onchange="render()" class="rounded-xl p-2 text-sm bg-gray-50 border-none font-bold text-gray-700">
+    </div>
+
     <div class="mb-6">
         <button onclick="toggleWorkout()" class="w-full bg-purple-600 text-white px-6 py-4 rounded-2xl text-sm font-black shadow-lg italic uppercase tracking-wider">🏋️ Mein Trainingsplan</button>
     </div>
@@ -44,30 +48,25 @@
             <div class="space-y-6 text-sm">
                 <div>
                     <p class="font-black text-purple-600 text-xs uppercase mb-2">🦵 Beine</p>
-                    <p class="font-bold text-gray-800">Goblet Squats: <span class="text-gray-500 font-normal">4x 12-20 (3s runter)</span></p>
-                    <p class="font-bold text-gray-800 mt-1">Romanian Deadlifts: <span class="text-gray-500 font-normal">3x 12-15</span></p>
+                    <p class="font-bold text-gray-800 italic">Goblet Squats: <span class="text-gray-500 font-normal">4x 12-20 (3s runter)</span></p>
+                    <p class="font-bold text-gray-800 mt-1 italic">Romanian Deadlifts: <span class="text-gray-500 font-normal">3x 12-15</span></p>
                 </div>
                 <div>
                     <p class="font-black text-blue-600 text-xs uppercase mb-2">💪 Oberkörper</p>
-                    <p class="font-bold text-gray-800">Floor Press (KH): <span class="text-gray-500 font-normal">4x 10-15 (60s Pause)</span></p>
-                    <p class="font-bold text-gray-800 mt-1">Einarmiges Rudern: <span class="text-gray-500 font-normal">4x 12-15 je Seite</span></p>
+                    <p class="font-bold text-gray-800 italic">Floor Press (KH): <span class="text-gray-500 font-normal">4x 10-15</span></p>
+                    <p class="font-bold text-gray-800 mt-1 italic">Einarmiges Rudern: <span class="text-gray-500 font-normal">4x 12-15 je Seite</span></p>
                 </div>
                 <div>
                     <p class="font-black text-orange-600 text-xs uppercase mb-2">🧍 Core & Schultern</p>
-                    <p class="font-bold text-gray-800">Schulterdrücken: <span class="text-gray-500 font-normal">3x 10-15</span></p>
-                    <p class="font-bold text-gray-800 mt-1">Plank: <span class="text-gray-500 font-normal">3x 45-75 Sek</span></p>
+                    <p class="font-bold text-gray-800 italic">Schulterdrücken: <span class="text-gray-500 font-normal">3x 10-15</span></p>
+                    <p class="font-bold text-gray-800 mt-1 italic">Plank: <span class="text-gray-500 font-normal">3x 45-75 Sek</span></p>
                 </div>
-                
-                <div class="bg-gray-50 p-4 rounded-2xl text-[10px] font-bold text-gray-400 leading-tight border border-gray-100 uppercase">
-                    Progression: Mehr Wdh. • Langsamer • Kürzere Pause • Extra Satz
-                </div>
-                
                 <button onclick="logWorkout()" class="w-full bg-purple-600 text-white py-5 rounded-2xl font-black uppercase shadow-lg">Training jetzt loggen</button>
             </div>
         </div>
     </div>
 
-    <div class="card p-6 mb-6 border-t-8 border-black">
+    <div class="card p-6 mb-6 border-t-8 border-black shadow-xl">
         <input id="foodInput" type="text" oninput="autoCheck()" placeholder="Was isst du gerade?" class="w-full text-xl font-bold placeholder-gray-300 border-none focus:ring-0 p-0 mb-4 outline-none">
         <div class="grid grid-cols-2 gap-3 mb-4">
             <select id="mealInput" class="bg-gray-50 p-3 rounded-xl font-bold text-gray-600 text-sm">
@@ -83,7 +82,7 @@
     <div id="foodList" class="space-y-3 mb-8"></div>
 
     <div class="card p-6 mb-8 bg-green-50 border border-green-100">
-        <h3 class="font-black uppercase text-xs mb-3 text-green-800">Gewicht (1x pro Woche)</h3>
+        <h3 class="font-black uppercase text-xs mb-3 text-green-800">Gewicht (Wöchentlich)</h3>
         <div class="flex gap-2">
             <input id="weightInput" type="number" step="0.1" placeholder="z.B. 85.2" class="flex-grow p-3 rounded-xl font-bold border-none">
             <button onclick="saveWeight()" class="bg-green-600 text-white px-6 rounded-xl font-bold">OK</button>
@@ -93,8 +92,11 @@
 
     <script>
         const qs = (id) => document.getElementById(id);
-        const goodWords = ['salat', 'gemüse', 'hähnchen', 'quark', 'ei', 'fisch', 'brokkoli', 'wasser', 'apfel', 'beeren', 'steak', 'pute', 'reis', 'kartoffel'];
-        const badWords = ['pizza', 'burger', 'bier', 'cola', 'schokolade', 'chips', 'kuchen', 'pommes', 'döner', 'nudeln', 'zucker', 'alkohol'];
+        const goodWords = ['salat', 'gemüse', 'hähnchen', 'quark', 'ei', 'fisch', 'brokkoli', 'wasser', 'apfel', 'beeren', 'steak', 'pute', 'reis', 'kartoffel', 'linsen', 'bohnen'];
+        const badWords = [' pizza', 'burger', 'bier', 'cola', 'schokolade', 'chips', 'kuchen', 'pommes', 'döner', 'nudeln', 'zucker', 'alkohol', 'eis'];
+
+        // Init: Heute setzen
+        qs('dateInput').value = new Date().toISOString().split('T')[0];
 
         function toggleWorkout() { qs('workoutOverlay').classList.toggle('hidden'); }
 
@@ -105,20 +107,19 @@
             if (!input) { feedback.innerText = "Warte auf Eingabe..."; return; }
             let isGood = goodWords.some(word => input.includes(word));
             let isBad = badWords.some(word => input.includes(word));
-            if (isGood) { tagInput.value = "Normal"; feedback.innerText = "Top! Genau richtig."; feedback.className = "text-[10px] font-bold text-green-600 uppercase italic"; }
+            if (isGood) { tagInput.value = "Normal"; feedback.innerText = "Top! Das passt."; feedback.className = "text-[10px] font-bold text-green-600 uppercase italic"; }
             else if (isBad) { tagInput.value = "Cheat"; feedback.innerText = "Vorsicht! Cheat-Gefahr."; feedback.className = "text-[10px] font-bold text-red-600 uppercase italic"; }
         }
 
-        function getData() {
-            const date = new Date().toISOString().split('T')[0];
+        function getData(date) {
             return JSON.parse(localStorage.getItem('f_' + date) || '[]');
         }
 
         function logWorkout() {
-            const date = new Date().toISOString().split('T')[0];
-            const data = getData();
+            const date = qs('dateInput').value;
+            const data = getData(date);
             data.unshift({
-                food: "🔥 Ganzkörper-Workout",
+                food: "🔥 Ganzkörper-Workout erledigt",
                 meal: "TRAINING 🏋️",
                 tag: "Normal",
                 time: new Date().toLocaleTimeString('de-DE').slice(0,5),
@@ -132,8 +133,8 @@
         function saveFood() {
             const food = qs('foodInput').value.trim();
             if (!food) return;
-            const date = new Date().toISOString().split('T')[0];
-            const data = getData();
+            const date = qs('dateInput').value;
+            const data = getData(date);
             data.unshift({
                 food,
                 meal: qs('mealInput').value,
@@ -147,7 +148,8 @@
         }
 
         function render() {
-            const data = getData();
+            const date = qs('dateInput').value;
+            const data = getData(date);
             const list = qs('foodList');
             list.innerHTML = '';
             let cheats = 0;
@@ -160,32 +162,33 @@
                 const bgColor = isWorkout ? 'bg-purple-50' : 'bg-white';
 
                 const div = document.createElement('div');
-                div.className = `card p-4 flex items-center justify-between border-l-8 ${borderColor} ${bgColor}`;
+                div.className = `card p-4 flex items-center justify-between border-l-8 ${borderColor} ${bgColor} mb-2`;
                 div.innerHTML = `
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase">${item.time} • ${item.meal}</p>
                         <p class="font-bold text-gray-800">${item.food}</p>
                     </div>
-                    <button onclick="remove(${index})" class="text-gray-300 text-xl">&times;</button>
+                    <button onclick="remove(${index})" class="text-gray-300 text-xl px-2">&times;</button>
                 `;
                 list.appendChild(div);
             });
 
-            // Score & Ampel
-            const score = Math.max(0, 100 - (cheats * 20));
+            // Score & Ampel (basierend auf gewählten Tag)
+            const score = Math.max(0, 100 - (cheats * 25));
             qs('score').innerText = score + "%";
             const ampel = qs('ampelStatus');
-            if (score >= 80) { ampel.innerText = "🟢 Gut"; ampel.className = "text-[10px] text-green-600 font-black uppercase"; }
-            else { ampel.innerText = "🔴 Kritisch"; ampel.className = "text-[10px] text-red-600 font-black uppercase"; }
+            if (score >= 75) { ampel.innerText = "🟢 GUT"; ampel.className = "text-[10px] text-green-600 font-black"; }
+            else { ampel.innerText = "🔴 KRITISCH"; ampel.className = "text-[10px] text-red-600 font-black"; }
 
-            // ZEIT-WARNUNG LOGIK (FIX)
+            // ZEIT-WARNUNG LOGIK
             const hour = new Date().getHours();
             const warningArea = qs('warningArea');
             warningArea.innerHTML = '';
-            if (hour >= 20 && data.length > 0) {
+            // Nur warnen, wenn wir HEUTE betrachten und es nach 20 Uhr ist
+            if (hour >= 20 && date === new Date().toISOString().split('T')[0]) {
                 warningArea.innerHTML = `
-                    <div class="bg-red-100 p-4 rounded-2xl mb-4 text-red-700 text-xs font-bold border border-red-200">
-                        ⏰ ACHTUNG: Nach 20 Uhr! Dein Essensfenster ist eigentlich zu.
+                    <div class="bg-red-100 p-4 rounded-2xl mb-4 text-red-700 text-xs font-bold border border-red-200 shadow-sm animate-pulse">
+                        ⏰ ACHTUNG: Nach 20 Uhr! Essensfenster geschlossen.
                     </div>`;
             }
 
@@ -206,8 +209,8 @@
         }
 
         function remove(index) {
-            const date = new Date().toISOString().split('T')[0];
-            const data = getData();
+            const date = qs('dateInput').value;
+            const data = getData(date);
             data.splice(index, 1);
             localStorage.setItem('f_' + date, JSON.stringify(data));
             render();
